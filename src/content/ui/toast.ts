@@ -13,7 +13,7 @@ function getContainer(): HTMLElement {
       display: flex;
       flex-direction: column;
       gap: 8px;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     `
     document.body.appendChild(container)
   }
@@ -25,9 +25,9 @@ export function showToast(message: string, type: 'success' | 'error' | 'info' = 
 
   const toast = document.createElement('div')
   const colors = {
-    success: { bg: '#e8f5e9', border: '#a5d6a7', text: '#2e7d32' },
-    error: { bg: '#ffebee', border: '#ef9a9a', text: '#c62828' },
-    info: { bg: '#e3f2fd', border: '#90caf9', text: '#1565c0' },
+    success: { bg: '#F7F5EF', border: '#DDAD50', text: '#1C374C' },
+    error:   { bg: '#fff1f1', border: '#fca5a5', text: '#991b1b' },
+    info:    { bg: '#F7F5EF', border: '#243F57', text: '#1C374C' },
   }
   const c = colors[type]
 

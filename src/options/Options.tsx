@@ -25,21 +25,24 @@ export function Options(): React.ReactElement {
   const [activeTab, setActiveTab] = useState<Tab>('keys')
 
   return (
-    <div className="min-h-screen flex">
-      {/* Sidebar */}
-      <nav className="w-48 bg-white border-r border-gray-200 pt-8 px-3">
-        <div className="mb-6">
-          <h1 className="text-base font-bold text-gray-900 px-2">⚙️ Co-Pilot Settings</h1>
+    <div className="min-h-screen flex font-sans bg-sbs-offwhite">
+      {/* Sidebar — Navy */}
+      <nav className="w-52 bg-sbs-navy flex flex-col">
+        {/* Brand header */}
+        <div className="px-5 pt-6 pb-5 border-b border-white/10">
+          <div className="text-sbs-gold font-mono text-xs font-bold tracking-widest uppercase mb-1">SBS Digital</div>
+          <h1 className="text-white font-display text-base font-bold leading-tight">Upwork Co-Pilot</h1>
+          <p className="text-sbs-cream/60 text-xs mt-0.5">Settings</p>
         </div>
-        <ul className="space-y-1">
+        <ul className="space-y-0.5 px-3 pt-4 flex-1">
           {TABS.map((tab) => (
             <li key={tab.id}>
               <button
                 onClick={() => setActiveTab(tab.id)}
                 className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   activeTab === tab.id
-                    ? 'bg-green-50 text-green-700'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    ? 'bg-sbs-gold text-sbs-navy font-semibold'
+                    : 'text-sbs-cream/70 hover:text-white hover:bg-white/10'
                 }`}
               >
                 {tab.label}
@@ -47,10 +50,13 @@ export function Options(): React.ReactElement {
             </li>
           ))}
         </ul>
+        <div className="px-5 py-4 text-sbs-cream/30 text-xs border-t border-white/10">
+          sitesbystephen.com
+        </div>
       </nav>
 
       {/* Content */}
-      <main className="flex-1 p-8 max-w-3xl">
+      <main className="flex-1 p-8 max-w-3xl bg-white min-h-screen border-l border-sbs-border">
         {activeTab === 'keys' && <ApiKeys />}
         {activeTab === 'profile' && <Profile />}
         {activeTab === 'projects' && <Projects />}

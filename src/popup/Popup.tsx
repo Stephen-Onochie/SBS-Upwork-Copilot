@@ -57,19 +57,24 @@ export function Popup(): React.ReactElement {
   }
 
   return (
-    <div className="w-80 bg-white">
-      {/* Header */}
-      <div className="bg-upwork-green p-4 text-white">
-        <h1 className="text-lg font-bold">SBS Upwork Co-Pilot</h1>
-        <p className="text-sm opacity-80">Personal assistant for Stephen @ SBS Digital</p>
+    <div className="w-80 bg-sbs-offwhite font-sans">
+      {/* Header — Navy with gold accent bar */}
+      <div className="bg-sbs-navy px-4 pt-4 pb-3 text-white border-b-2 border-sbs-gold">
+        <div className="flex items-center gap-2 mb-0.5">
+          <span className="text-sbs-gold font-mono text-xs font-bold tracking-widest uppercase">SBS</span>
+          <span className="text-white/40 text-xs">|</span>
+          <span className="text-white/80 text-xs font-medium">Upwork Co-Pilot</span>
+        </div>
+        <h1 className="text-base font-bold font-display leading-tight text-white">Stephen @ SBS Digital</h1>
+        <p className="text-xs text-sbs-cream mt-0.5">Websites &amp; Automations That Convert</p>
       </div>
 
       <div className="p-4 space-y-3">
         {/* Gemini key warning */}
         {!state.geminiKeySet && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded p-3 text-sm text-yellow-800">
+          <div className="bg-amber-50 border border-sbs-gold/40 rounded-lg p-3 text-sm text-sbs-navy">
             ⚠️ Gemini API key not configured.{' '}
-            <button onClick={openOptions} className="underline font-semibold">
+            <button onClick={openOptions} className="underline font-semibold text-sbs-navy">
               Open Settings
             </button>
           </div>
@@ -77,7 +82,7 @@ export function Popup(): React.ReactElement {
 
         {/* Profile staleness */}
         {profileStale && (
-          <div className="bg-orange-50 border border-orange-200 rounded p-3 text-sm text-orange-800">
+          <div className="bg-amber-50 border border-amber-300 rounded-lg p-3 text-sm text-amber-900">
             🔔 Profile last analyzed {state.profileAge} days ago.{' '}
             <button onClick={openUpworkProfile} className="underline font-semibold">
               Re-analyze
@@ -86,33 +91,37 @@ export function Popup(): React.ReactElement {
         )}
 
         {/* Status rows */}
-        <div className="space-y-2 text-sm">
+        <div className="space-y-2 text-sm bg-white rounded-lg p-3 border border-sbs-border">
           <div className="flex items-center justify-between">
-            <span className="text-gray-600">Job Monitor</span>
-            <span className={`font-semibold ${state.monitorActive ? 'text-green-600' : 'text-gray-400'}`}>
-              {state.monitorActive ? (isSnoozed ? '⏸ Snoozed' : '● Active') : '○ Inactive'}
+            <span className="text-sbs-gray">Job Monitor</span>
+            <span className={`font-semibold ${state.monitorActive ? 'text-sbs-navy' : 'text-sbs-gray/60'}`}>
+              {state.monitorActive
+                ? (isSnoozed
+                  ? <span className="text-amber-600">⏸ Snoozed</span>
+                  : <span className="text-sbs-gold">● Active</span>)
+                : '○ Inactive'}
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-gray-600">Profile Age</span>
-            <span className={`font-semibold ${profileStale ? 'text-orange-600' : 'text-gray-800'}`}>
+            <span className="text-sbs-gray">Profile Age</span>
+            <span className={`font-semibold ${profileStale ? 'text-amber-600' : 'text-sbs-navy'}`}>
               {state.profileAge !== null ? `${state.profileAge}d ago` : 'Never analyzed'}
             </span>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col gap-2 pt-2 border-t border-gray-100">
+        <div className="flex flex-col gap-2 pt-1">
           <button
             onClick={toggleSnooze}
             disabled={!state.monitorActive}
-            className="w-full py-2 px-3 text-sm font-medium bg-gray-100 hover:bg-gray-200 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full py-2 px-3 text-sm font-medium bg-white border border-sbs-border text-sbs-navy hover:bg-sbs-offwhite rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             {isSnoozed ? '▶ Resume Monitoring' : '⏸ Snooze 1 Hour'}
           </button>
           <button
             onClick={openOptions}
-            className="w-full py-2 px-3 text-sm font-medium bg-upwork-green text-white hover:opacity-90 rounded-lg"
+            className="w-full py-2 px-3 text-sm font-semibold bg-sbs-gold text-sbs-navy hover:bg-sbs-gold-light rounded-lg transition-colors"
           >
             ⚙️ Open Settings
           </button>
@@ -120,7 +129,7 @@ export function Popup(): React.ReactElement {
       </div>
 
       {/* Footer */}
-      <div className="px-4 pb-3 text-center text-xs text-gray-400">
+      <div className="px-4 pb-3 text-center text-xs text-sbs-gray/60 border-t border-sbs-border pt-2">
         Monitoring pauses when browser closes
       </div>
     </div>

@@ -14,8 +14,11 @@ export function ApiKeys(): React.ReactElement {
   const [rpmCap, setRpmCap] = useState(10)
 
   const [geminiStatus, setGeminiStatus] = useState<Status>('idle')
+  const [geminiError, setGeminiError] = useState('')
   const [hubspotStatus, setHubspotStatus] = useState<Status>('idle')
+  const [hubspotError, setHubspotError] = useState('')
   const [supabaseStatus, setSupabaseStatus] = useState<Status>('idle')
+  const [supabaseError, setSupabaseError] = useState('')
   const [saved, setSaved] = useState(false)
 
   useEffect(() => {
@@ -53,40 +56,47 @@ export function ApiKeys(): React.ReactElement {
 
   async function testGemini(): Promise<void> {
     setGeminiStatus('testing')
+    setGeminiError('')
     const resp = await chrome.runtime.sendMessage({ type: 'TEST_GEMINI_KEY', apiKey: geminiKey })
     setGeminiStatus(resp.ok ? 'ok' : 'error')
+    if (!resp.ok) setGeminiError(resp.error ?? 'Unknown error')
   }
 
   async function testHubSpot(): Promise<void> {
     setHubspotStatus('testing')
+    setHubspotError('')
     const resp = await chrome.runtime.sendMessage({ type: 'TEST_HUBSPOT_TOKEN', token: hubspotToken })
     setHubspotStatus(resp.ok ? 'ok' : 'error')
+    if (!resp.ok) setHubspotError(resp.error ?? 'Unknown error')
   }
 
   async function loginSupabase(): Promise<void> {
     if (!supabaseEmail || !supabasePassword) return
     setSupabaseStatus('testing')
+    setSupabaseError('')
     const resp = await chrome.runtime.sendMessage({
       type: 'SUPABASE_LOGIN',
       email: supabaseEmail,
       password: supabasePassword,
     })
     setSupabaseStatus(resp.ok ? 'ok' : 'error')
+    if (!resp.ok) setSupabaseError(resp.error ?? 'Unknown error')
   }
 
-  const StatusBadge = ({ status }: { status: Status }): React.ReactElement => {
+  const StatusBadge = ({ status, errorMsg }: { status: Status; errorMsg?: string }): React.ReactElement => {
     if (status === 'idle') return <></>
-    const map = {
-      testing: <span className="text-xs text-gray-500">Testing...</span>,
-      ok: <span className="text-xs text-green-600 font-semibold">✅ Connected</span>,
-      error: <span className="text-xs text-red-600 font-semibold">❌ Failed</span>,
-    }
-    return map[status]
+    if (status === 'testing') return <span className="text-xs text-gray-500">Testing...</span>
+    if (status === 'ok') return <span className="text-xs text-green-600 font-semibold">✅ Connected</span>
+    return (
+      <span className="text-xs text-red-600 font-semibold">
+        ❌ Failed{errorMsg ? ` — ${errorMsg}` : ''}
+      </span>
+    )
   }
 
   return (
     <div className="space-y-8">
-      <h2 className="text-xl font-bold text-gray-900">API Keys & Configuration</h2>
+      <h2 className="text-xl font-bold text-sbs-navy font-display">API Keys & Configuration</h2>
 
       {/* Gemini */}
       <section className="space-y-3">
@@ -123,7 +133,7 @@ export function ApiKeys(): React.ReactElement {
             className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-sm font-medium rounded-lg">
             Test Connection
           </button>
-          <StatusBadge status={geminiStatus} />
+          <StatusBadge status={geminiStatus} errorMsg={geminiError} />
         </div>
         <p className="text-xs text-gray-400">
           ⚠️ Free tier may use prompts for model training. Keep sensitive data minimal in prompts.
@@ -148,7 +158,7 @@ export function ApiKeys(): React.ReactElement {
             className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-sm font-medium rounded-lg">
             Test Connection
           </button>
-          <StatusBadge status={hubspotStatus} />
+          <StatusBadge status={hubspotStatus} errorMsg={hubspotError} />
         </div>
       </section>
 
@@ -184,12 +194,12 @@ export function ApiKeys(): React.ReactElement {
             className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-sm font-medium rounded-lg">
             Sign In
           </button>
-          <StatusBadge status={supabaseStatus} />
+          <StatusBadge status={supabaseStatus} errorMsg={supabaseError} />
         </div>
       </section>
 
       <button onClick={save}
-        className="px-6 py-2 bg-upwork-green text-white font-semibold rounded-lg hover:opacity-90">
+        className="px-6 py-2 bg-sbs-gold text-sbs-navy font-semibold rounded-lg hover:bg-sbs-gold-light transition-colors">
         {saved ? '✅ Saved!' : 'Save All'}
       </button>
     </div>

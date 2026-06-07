@@ -4,7 +4,6 @@ import { generateProposal, generateQuestionAnswer } from './proposal'
 import { scoreJob } from './scorer'
 import { syncHubSpot } from './hubspot'
 import { logProposalSent, signIn } from './supabase'
-import { callGemini } from './gemini'
 import { get, set } from '@/lib/storage'
 
 export function handleMessage(
@@ -48,10 +47,21 @@ async function dispatch(message: ExtensionMessage): Promise<unknown> {
     }
 
     case 'TEST_GEMINI_KEY': {
-      const { gemini_model_scoring } = await get(['gemini_model_scoring'])
-      const model = gemini_model_scoring ?? 'gemini-2.0-flash-lite'
-      const result = await callGemini(model, 'Say "OK" and nothing else.', { apiKey: message.apiKey })
-      return { response: result }
+      // Use the models list endpoint — no tokens, no rate-limit risk
+      const resp = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models?key=${message.apiKey}&pageSize=1`
+      )
+      if (!resp.ok) {
+        const body = await resp.text()
+        const msg = (() => {
+          try { return (JSON.parse(body) as { error?: { message?: string } }).error?.message ?? body } catch { return body }
+        })()
+        if (resp.status === 429) throw new Error('Rate limited by Gemini — wait a moment and try again')
+        if (resp.status === 400) throw new Error('Invalid API key format')
+        if (resp.status === 403) throw new Error('API key rejected — check it has Generative Language API enabled')
+        throw new Error(`Gemini API error ${resp.status}: ${msg.slice(0, 120)}`)
+      }
+      return { ok: true }
     }
 
     case 'SUPABASE_LOGIN':

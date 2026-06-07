@@ -12,60 +12,69 @@ export function mountProposalPanel(
   overlay.style.cssText = `
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(28,55,76,0.6);
     z-index: 999998;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   `
 
   const panel = document.createElement('div')
   panel.style.cssText = `
     background: white;
     border-radius: 12px;
-    padding: 24px;
+    padding: 0;
     width: 680px;
     max-width: 90vw;
     max-height: 80vh;
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 40px rgba(28,55,76,0.25);
+    overflow: hidden;
   `
 
   const header = document.createElement('div')
-  header.style.cssText = 'display: flex; align-items: center; justify-content: space-between;'
+  header.style.cssText = `
+    display: flex; align-items: center; justify-content: space-between;
+    background: #1C374C; padding: 16px 20px;
+    border-bottom: 2px solid #DDAD50;
+  `
 
   const title = document.createElement('h2')
   title.textContent = 'Generated Proposal'
-  title.style.cssText = 'margin: 0; font-size: 18px; font-weight: 700; color: #1a1a1a;'
+  title.style.cssText = 'margin: 0; font-size: 16px; font-weight: 700; color: #ffffff;'
 
   const closeBtn = document.createElement('button')
   closeBtn.textContent = '✕'
   closeBtn.type = 'button'
   closeBtn.style.cssText = `
-    background: none; border: none; font-size: 20px; cursor: pointer; color: #666; padding: 0;
+    background: none; border: none; font-size: 18px; cursor: pointer; color: #E1D8B3; padding: 0; line-height: 1;
   `
   closeBtn.addEventListener('click', () => overlay.remove())
 
   header.appendChild(title)
   header.appendChild(closeBtn)
 
+  const body = document.createElement('div')
+  body.style.cssText = 'padding: 20px; display: flex; flex-direction: column; gap: 14px; overflow: auto; flex: 1;'
+
   const notice = document.createElement('div')
   notice.textContent = '✅ Draft inserted — review carefully before sending. Never click Submit automatically.'
   notice.style.cssText = `
-    background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7;
-    padding: 8px 12px; border-radius: 4px; font-size: 12px; font-weight: 600;
+    background: #F7F5EF; color: #1C374C; border: 1px solid #DDAD50;
+    padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;
   `
 
   const textarea = document.createElement('textarea')
   textarea.value = text
   textarea.style.cssText = `
-    width: 100%; min-height: 300px; padding: 12px; border: 1px solid #ddd;
+    width: 100%; min-height: 280px; padding: 12px; border: 1px solid #E0DDD5;
     border-radius: 6px; font-size: 14px; line-height: 1.6; resize: vertical;
-    box-sizing: border-box; font-family: inherit;
+    box-sizing: border-box; font-family: inherit; outline: none;
   `
+  textarea.addEventListener('focus', () => { textarea.style.borderColor = '#DDAD50' })
+  textarea.addEventListener('blur', () => { textarea.style.borderColor = '#E0DDD5' })
 
   const actions = document.createElement('div')
   actions.style.cssText = 'display: flex; gap: 8px;'
@@ -74,7 +83,7 @@ export function mountProposalPanel(
   copyBtn.textContent = '📋 Copy to Clipboard'
   copyBtn.type = 'button'
   copyBtn.style.cssText = `
-    padding: 8px 16px; background: #1a1a1a; color: white; border: none;
+    padding: 8px 16px; background: #1C374C; color: white; border: none;
     border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
   `
   copyBtn.addEventListener('click', () => {
@@ -91,7 +100,7 @@ export function mountProposalPanel(
     regenBtn.textContent = '🔄 Regenerate'
     regenBtn.type = 'button'
     regenBtn.style.cssText = `
-      padding: 8px 16px; background: #14a800; color: white; border: none;
+      padding: 8px 16px; background: #DDAD50; color: #1C374C; border: none;
       border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
     `
     regenBtn.addEventListener('click', () => {
@@ -109,10 +118,11 @@ export function mountProposalPanel(
     actions.appendChild(regenBtn)
   }
 
+  body.appendChild(notice)
+  body.appendChild(textarea)
+  body.appendChild(actions)
   panel.appendChild(header)
-  panel.appendChild(notice)
-  panel.appendChild(textarea)
-  panel.appendChild(actions)
+  panel.appendChild(body)
   overlay.appendChild(panel)
 
   // Close on overlay click

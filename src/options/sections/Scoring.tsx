@@ -40,14 +40,14 @@ export function Scoring(): React.ReactElement {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-gray-900">Scoring Configuration</h2>
+        <h2 className="text-xl font-bold text-sbs-navy font-display">Scoring Configuration</h2>
         <button onClick={resetDefaults}
-          className="px-3 py-1.5 text-xs text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
+          className="px-3 py-1.5 text-xs text-sbs-navy border border-sbs-border rounded-lg hover:bg-sbs-offwhite transition-colors">
           Reset to Defaults
         </button>
       </div>
 
-      {saved && <div className="text-sm text-green-600 font-semibold">✅ Saved!</div>}
+      {saved && <div className="text-sm text-sbs-navy font-semibold">✅ Saved!</div>}
 
       {/* Hard gates */}
       <section className="space-y-3">
@@ -80,7 +80,7 @@ export function Scoring(): React.ReactElement {
       <section className="space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-gray-800 text-sm">Factor Weights</h3>
-          <span className={`text-xs font-semibold ${totalWeight === 100 ? 'text-green-600' : 'text-red-500'}`}>
+          <span className={`text-xs font-semibold ${totalWeight === 100 ? 'text-sbs-navy' : 'text-red-500'}`}>
             Total: {totalWeight}/100 {totalWeight !== 100 && '⚠️'}
           </span>
         </div>
@@ -93,7 +93,7 @@ export function Scoring(): React.ReactElement {
               </div>
               <input type="range" min={0} max={50} value={weights[key]}
                 onChange={(e) => setWeights({ ...weights, [key]: parseInt(e.target.value) })}
-                className="flex-1 accent-green-600" />
+                className="flex-1 accent-[#DDAD50]" />
               <span className="w-8 text-right text-sm font-semibold text-gray-700">{weights[key]}</span>
             </div>
           ))}
@@ -101,7 +101,7 @@ export function Scoring(): React.ReactElement {
       </section>
 
       <button onClick={save}
-        className="px-6 py-2 bg-upwork-green text-white font-semibold rounded-lg hover:opacity-90">
+        className="px-6 py-2 bg-sbs-gold text-sbs-navy font-semibold rounded-lg hover:bg-sbs-gold-light transition-colors">
         {saved ? '✅ Saved!' : 'Save Settings'}
       </button>
     </div>

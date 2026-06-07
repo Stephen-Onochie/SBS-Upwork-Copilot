@@ -29,9 +29,9 @@ export function Bidding(): React.ReactElement {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-bold text-gray-900">Bidding & Connects</h2>
+      <h2 className="text-xl font-bold text-sbs-navy font-display">Bidding & Connects</h2>
 
-      {saved && <div className="text-sm text-green-600 font-semibold">✅ Saved!</div>}
+      {saved && <div className="text-sm text-sbs-navy font-semibold">✅ Saved!</div>}
 
       <section className="space-y-4">
         <label className="flex items-center gap-2 text-sm cursor-pointer">
@@ -46,17 +46,17 @@ export function Bidding(): React.ReactElement {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Target Total Connects: <span className="font-bold text-green-700">{connectsTarget}</span>
+            Target Total Connects: <span className="font-bold text-sbs-gold">{connectsTarget}</span>
           </label>
           <input type="range" min={1} max={40} value={connectsTarget}
             onChange={(e) => setConnectsTarget(parseInt(e.target.value))}
-            className="w-full accent-green-600" />
+            className="w-full accent-[#DDAD50]" />
           <div className="flex justify-between text-xs text-gray-400 mt-0.5">
             <span>1</span><span>10</span><span>20</span><span>30</span><span>40</span>
           </div>
         </div>
 
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm">
+        <div className="bg-sbs-offwhite border border-sbs-border rounded-lg p-4 text-sm">
           <p className="font-semibold text-gray-700 mb-2">Example:</p>
           <p className="text-gray-600">
             If base cost is <strong>{exampleBase} connects</strong> and target is <strong>{connectsTarget}</strong>:
@@ -69,7 +69,7 @@ export function Bidding(): React.ReactElement {
       </section>
 
       <button onClick={save}
-        className="px-6 py-2 bg-upwork-green text-white font-semibold rounded-lg hover:opacity-90">
+        className="px-6 py-2 bg-sbs-gold text-sbs-navy font-semibold rounded-lg hover:bg-sbs-gold-light transition-colors">
         {saved ? '✅ Saved!' : 'Save Settings'}
       </button>
     </div>

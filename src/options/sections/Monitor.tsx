@@ -37,11 +37,11 @@ export function Monitor(): React.ReactElement {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-bold text-gray-900">Job Monitor</h2>
+      <h2 className="text-xl font-bold text-sbs-navy font-display">Job Monitor</h2>
 
-      {saved && <div className="text-sm text-green-600 font-semibold">✅ Saved!</div>}
+      {saved && <div className="text-sm text-sbs-navy font-semibold">✅ Saved!</div>}
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+      <div className="bg-sbs-offwhite border border-sbs-gold/30 rounded-lg p-4 text-sm text-sbs-navy">
         ℹ️ Monitoring only runs while the Chrome browser is open. It is not a 24/7 background service.
       </div>
 
@@ -63,16 +63,16 @@ export function Monitor(): React.ReactElement {
             Saved Searches ({searches.filter((s) => s.monitorEnabled).length} active)
           </h3>
           <button onClick={openSavedSearches}
-            className="text-xs text-blue-600 hover:underline">
+            className="text-xs text-sbs-gold font-medium hover:underline">
             View on Upwork →
           </button>
         </div>
 
         {searches.length === 0 && (
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm text-gray-500">
+          <div className="bg-sbs-offwhite border border-sbs-border rounded-lg p-4 text-sm text-sbs-gray">
             No saved searches discovered yet. Visit your Upwork saved searches page to sync them.
             <br />
-            <button onClick={openSavedSearches} className="mt-2 text-blue-600 hover:underline text-xs">
+            <button onClick={openSavedSearches} className="mt-2 text-sbs-gold hover:underline text-xs font-medium">
               Go to Saved Searches →
             </button>
           </div>
@@ -93,7 +93,7 @@ export function Monitor(): React.ReactElement {
                     className="sr-only" />
                   <div onClick={() => toggleSearch(search.id)}
                     className={`w-10 h-5 rounded-full cursor-pointer transition-colors ${
-                      search.monitorEnabled ? 'bg-green-500' : 'bg-gray-200'
+                      search.monitorEnabled ? 'bg-sbs-gold' : 'bg-sbs-border'
                     }`}>
                     <div className={`w-4 h-4 bg-white rounded-full shadow mt-0.5 mx-0.5 transition-transform ${
                       search.monitorEnabled ? 'translate-x-5' : 'translate-x-0'
@@ -107,7 +107,7 @@ export function Monitor(): React.ReactElement {
       </section>
 
       <button onClick={save}
-        className="px-6 py-2 bg-upwork-green text-white font-semibold rounded-lg hover:opacity-90">
+        className="px-6 py-2 bg-sbs-gold text-sbs-navy font-semibold rounded-lg hover:bg-sbs-gold-light transition-colors">
         {saved ? '✅ Saved!' : 'Save Settings'}
       </button>
     </div>

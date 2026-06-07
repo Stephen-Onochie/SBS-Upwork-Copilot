@@ -67,18 +67,18 @@ export function Projects(): React.ReactElement {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-gray-900">Projects ({projects.length})</h2>
+        <h2 className="text-xl font-bold text-sbs-navy font-display">Projects ({projects.length})</h2>
         <button onClick={startNew}
-          className="px-4 py-1.5 bg-upwork-green text-white text-sm font-medium rounded-lg hover:opacity-90">
+          className="px-4 py-1.5 bg-sbs-gold text-sbs-navy text-sm font-semibold rounded-lg hover:bg-sbs-gold-light transition-colors">
           + Add Project
         </button>
       </div>
 
-      {saved && <div className="text-sm text-green-600 font-semibold">✅ Saved!</div>}
+      {saved && <div className="text-sm text-sbs-navy font-semibold">✅ Saved!</div>}
 
       {/* Edit form */}
       {editing && (
-        <div className="border border-blue-200 bg-blue-50 rounded-xl p-5 space-y-3">
+        <div className="border border-sbs-gold/30 bg-sbs-offwhite rounded-xl p-5 space-y-3">
           <h3 className="font-semibold text-gray-800 text-sm">
             {projects.find((p) => p.id === editing.id) ? 'Edit Project' : 'New Project'}
           </h3>
@@ -114,11 +114,11 @@ export function Projects(): React.ReactElement {
           </div>
           <div className="flex gap-2">
             <button onClick={saveEdit}
-              className="px-4 py-1.5 bg-green-600 text-white text-sm font-medium rounded-lg">
+              className="px-4 py-1.5 bg-sbs-gold text-sbs-navy text-sm font-semibold rounded-lg hover:bg-sbs-gold-light transition-colors">
               Save
             </button>
             <button onClick={() => setEditing(null)}
-              className="px-4 py-1.5 bg-gray-200 text-gray-700 text-sm font-medium rounded-lg">
+              className="px-4 py-1.5 bg-white border border-sbs-border text-sbs-gray text-sm font-medium rounded-lg hover:bg-sbs-offwhite transition-colors">
               Cancel
             </button>
           </div>
@@ -143,14 +143,14 @@ export function Projects(): React.ReactElement {
                 </div>
               )}
               {project.url && (
-                <a href={project.url} target="_blank" rel="noreferrer" className="text-xs text-blue-500 hover:underline">
+                <a href={project.url} target="_blank" rel="noreferrer" className="text-xs text-sbs-gold hover:underline">
                   {project.url}
                 </a>
               )}
             </div>
             <div className="flex gap-2 ml-4 flex-shrink-0">
               <button onClick={() => startEdit(project)}
-                className="text-xs text-blue-600 hover:underline">Edit</button>
+                className="text-xs text-sbs-navy font-medium hover:underline">Edit</button>
               <button onClick={() => deleteProject(project.id)}
                 className="text-xs text-red-500 hover:underline">Delete</button>
             </div>

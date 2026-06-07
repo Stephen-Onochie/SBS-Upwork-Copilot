@@ -24,15 +24,15 @@ export function Profile(): React.ReactElement {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-gray-900">Profile</h2>
+        <h2 className="text-xl font-bold text-sbs-navy font-display">Profile</h2>
         <button onClick={openProfilePage}
-          className="px-4 py-1.5 bg-upwork-green text-white text-sm font-medium rounded-lg hover:opacity-90">
+          className="px-4 py-1.5 bg-sbs-gold text-sbs-navy text-sm font-semibold rounded-lg hover:bg-sbs-gold-light transition-colors">
           Go to Upwork Profile →
         </button>
       </div>
 
       {lastAnalyzed && (
-        <div className={`rounded-lg p-3 text-sm ${daysSince !== null && daysSince > 35 ? 'bg-orange-50 text-orange-800 border border-orange-200' : 'bg-green-50 text-green-800 border border-green-200'}`}>
+        <div className={`rounded-lg p-3 text-sm ${daysSince !== null && daysSince > 35 ? 'bg-amber-50 text-amber-900 border border-amber-200' : 'bg-sbs-offwhite text-sbs-navy border border-sbs-border'}`}>
           Last analyzed: {new Date(lastAnalyzed).toLocaleDateString()}
           {daysSince !== null && ` (${daysSince} days ago)`}
           {daysSince !== null && daysSince > 35 && ' — consider re-analyzing'}
@@ -40,7 +40,7 @@ export function Profile(): React.ReactElement {
       )}
 
       {!profile && !analyzing && (
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center text-gray-500">
+        <div className="bg-sbs-offwhite border border-sbs-border rounded-lg p-6 text-center text-sbs-gray">
           <p className="text-sm">No profile analyzed yet.</p>
           <p className="text-xs mt-1">Visit your Upwork profile page and click "Analyze Profile".</p>
         </div>

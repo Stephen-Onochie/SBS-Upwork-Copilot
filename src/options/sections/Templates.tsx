@@ -99,14 +99,14 @@ export function Templates(): React.ReactElement {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-gray-900">Templates</h2>
+        <h2 className="text-xl font-bold text-sbs-navy font-display">Templates</h2>
         <button onClick={addTemplate}
-          className="px-4 py-1.5 bg-upwork-green text-white text-sm font-medium rounded-lg hover:opacity-90">
+          className="px-4 py-1.5 bg-sbs-gold text-sbs-navy text-sm font-semibold rounded-lg hover:bg-sbs-gold-light transition-colors">
           + New Template
         </button>
       </div>
 
-      {saved && <div className="text-sm text-green-600 font-semibold">✅ Saved!</div>}
+      {saved && <div className="text-sm text-sbs-navy font-semibold">✅ Saved!</div>}
 
       <div className="flex gap-6">
         {/* Template list */}
@@ -115,10 +115,10 @@ export function Templates(): React.ReactElement {
             <div key={t.id}
               onClick={() => setSelectedId(t.id)}
               className={`px-3 py-2 rounded-lg cursor-pointer text-sm flex items-center justify-between ${
-                t.id === selectedId ? 'bg-green-50 text-green-700 font-semibold' : 'text-gray-600 hover:bg-gray-50'
+                t.id === selectedId ? 'bg-sbs-gold/15 text-sbs-navy font-semibold border border-sbs-gold/30' : 'text-sbs-gray hover:bg-sbs-offwhite'
               }`}>
               <span className="truncate">{t.name}</span>
-              {t.isDefault && <span className="text-xs text-green-500 ml-1">★</span>}
+              {t.isDefault && <span className="text-xs text-sbs-gold ml-1">★</span>}
             </div>
           ))}
         </div>
@@ -134,7 +134,7 @@ export function Templates(): React.ReactElement {
               />
               {!selected.isDefault && (
                 <button onClick={() => setDefault(selected.id)}
-                  className="text-xs text-gray-500 hover:text-gray-800 border border-gray-300 rounded px-2 py-1">
+                  className="text-xs text-sbs-navy border border-sbs-border rounded px-2 py-1 hover:bg-sbs-offwhite transition-colors">
                   Set as Default
                 </button>
               )}
@@ -147,7 +147,7 @@ export function Templates(): React.ReactElement {
               {selected.blocks.map((block, idx) => (
                 <div key={block.id} className="border border-gray-200 rounded-xl p-4 bg-white space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-gray-500 uppercase">
+                    <span className="text-xs font-semibold text-sbs-gray uppercase">
                       {block.type === 'ai' ? '🤖 AI Block' : block.type === 'static' ? '📝 Static' : '📂 Dynamic Projects'}
                     </span>
                     <div className="flex gap-2">
@@ -191,10 +191,10 @@ export function Templates(): React.ReactElement {
 
             {/* Add block */}
             <div className="flex gap-2">
-              <span className="text-xs text-gray-500 self-center">Add block:</span>
+              <span className="text-xs text-sbs-gray self-center">Add block:</span>
               {(['ai', 'static', 'dynamic_projects'] as TemplateBlockType[]).map((type) => (
                 <button key={type} onClick={() => addBlock(selected.id, type)}
-                  className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded-lg font-medium">
+                  className="px-3 py-1 text-xs bg-sbs-offwhite border border-sbs-border hover:bg-sbs-gold/10 hover:border-sbs-gold/30 text-sbs-navy rounded-lg font-medium transition-colors">
                   + {type === 'ai' ? 'AI' : type === 'static' ? 'Static' : 'Projects'}
                 </button>
               ))}
