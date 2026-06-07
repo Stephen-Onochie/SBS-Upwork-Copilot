@@ -204,6 +204,7 @@ export type MessageType =
   | 'TEST_GEMINI_KEY'
   | 'TEST_HUBSPOT_TOKEN'
   | 'SUPABASE_LOGIN'
+  | 'SCRAPE_AND_ANALYZE_PROFILE'
 
 export interface MessageBase {
   type: MessageType
@@ -266,6 +267,12 @@ export interface SupabaseLoginMessage extends MessageBase {
   type: 'SUPABASE_LOGIN'
   email: string
   password: string
+  supabaseUrl?: string
+  supabaseAnonKey?: string
+}
+
+export interface ScrapeAndAnalyzeProfileMessage extends MessageBase {
+  type: 'SCRAPE_AND_ANALYZE_PROFILE'
 }
 
 export type ExtensionMessage =
@@ -279,6 +286,7 @@ export type ExtensionMessage =
   | TestGeminiKeyMessage
   | TestHubSpotTokenMessage
   | SupabaseLoginMessage
+  | ScrapeAndAnalyzeProfileMessage
 
 export interface MessageResponse<T = unknown> {
   ok: boolean

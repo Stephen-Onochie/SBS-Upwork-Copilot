@@ -6,7 +6,7 @@ export default defineManifest({
   version: '0.1.0',
   description: 'Personal Upwork assistant for SBS Digital — proposal generation, job scoring, and HubSpot sync.',
 
-  permissions: ['storage', 'alarms', 'notifications', 'offscreen', 'tabs'],
+  permissions: ['storage', 'alarms', 'notifications', 'offscreen', 'tabs', 'scripting'],
 
   host_permissions: [
     'https://*.upwork.com/*',
@@ -35,6 +35,10 @@ export default defineManifest({
       '48': 'icons/icon48.png',
       '128': 'icons/icon128.png',
     },
+  },
+
+  content_security_policy: {
+    extension_pages: "script-src 'self'; object-src 'self';",
   },
 
   options_page: 'src/options/index.html',

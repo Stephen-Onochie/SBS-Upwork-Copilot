@@ -22,8 +22,14 @@ async function getClient(): Promise<SupabaseClient> {
   return client
 }
 
-export async function signIn(email: string, password: string): Promise<void> {
-  const sb = await getClient()
+export async function signIn(email: string, password: string, url?: string, anonKey?: string): Promise<void> {
+  let sb: SupabaseClient
+  if (url && anonKey) {
+    // Use credentials from the form directly — no need to have saved first
+    client = null // force fresh client with the provided credentials
+    await set({ supabase_url: url, supabase_anon_key: anonKey })
+  }
+  sb = await getClient()
   const { data, error } = await sb.auth.signInWithPassword({ email, password })
   if (error) throw new Error(`Supabase sign-in failed: ${error.message}`)
   if (data.session) {

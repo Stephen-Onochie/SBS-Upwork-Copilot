@@ -1,29 +1,21 @@
 import type { Profile, ProfileVersion } from '@/lib/types'
 import { get, set } from '@/lib/storage'
-import { callGenerationModel } from './gemini'
+import { callScoringModel } from './gemini'
 import { logEvent } from './supabase'
 
 export async function analyzeProfile(rawText: string): Promise<Profile> {
-  const prompt = `You are helping a freelancer organize their Upwork profile data.
+  // Trim aggressively — 5k chars is plenty for structured extraction
+  const trimmedText = rawText.slice(0, 5000)
 
-Structure the following raw Upwork profile text into a JSON object with these exact fields:
-{
-  "title": "string",
-  "headline": "string",
-  "overview": "string (full bio text)",
-  "rate": "string (e.g. '$75/hr')",
-  "skills": ["string"],
-  "workHistory": [{ "title": "string", "description": "string", "skills": ["string"], "startDate": "string", "endDate": "string" }],
-  "employment": [{ "company": "string", "title": "string", "startDate": "string", "endDate": "string" }],
-  "education": [{ "school": "string", "degree": "string", "field": "string" }]
-}
+  const prompt = `Extract Upwork profile data from the text below. Return ONLY valid JSON, no markdown, no explanation.
 
-Return ONLY valid JSON, no markdown, no explanation.
+JSON shape:
+{"title":"","headline":"","overview":"","rate":"","skills":[],"workHistory":[{"title":"","description":"","skills":[],"startDate":"","endDate":""}],"employment":[{"company":"","title":"","startDate":"","endDate":""}],"education":[{"school":"","degree":"","field":""}]}
 
-Raw profile text:
-${rawText}`
+Profile text:
+${trimmedText}`
 
-  const responseText = await callGenerationModel(prompt, { temperature: 0.1, maxOutputTokens: 4096 })
+  const responseText = await callScoringModel(prompt, { temperature: 0.1, maxOutputTokens: 2048 })
 
   let profile: Profile
   try {

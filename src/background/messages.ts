@@ -46,6 +46,20 @@ async function dispatch(message: ExtensionMessage): Promise<unknown> {
       return merged
     }
 
+    case 'SCRAPE_AND_ANALYZE_PROFILE': {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+      if (!tab?.id) throw new Error('No active tab found')
+      const results = await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: scrapeUpworkProfile,
+      })
+      const rawText = results[0]?.result as string | undefined
+      if (!rawText || rawText.length < 100) {
+        throw new Error('Could not read profile text — make sure you are on your Upwork profile page')
+      }
+      return analyzeProfile(rawText)
+    }
+
     case 'TEST_GEMINI_KEY': {
       // Use the models list endpoint — no tokens, no rate-limit risk
       const resp = await fetch(
@@ -65,7 +79,7 @@ async function dispatch(message: ExtensionMessage): Promise<unknown> {
     }
 
     case 'SUPABASE_LOGIN':
-      await signIn(message.email, message.password)
+      await signIn(message.email, message.password, message.supabaseUrl, message.supabaseAnonKey)
       return { ok: true }
 
     case 'TEST_HUBSPOT_TOKEN': {
@@ -79,4 +93,69 @@ async function dispatch(message: ExtensionMessage): Promise<unknown> {
     default:
       throw new Error(`Unknown message type`)
   }
+}
+
+// Runs inside the Upwork tab via chrome.scripting.executeScript — NO imports allowed
+function scrapeUpworkProfile(): string {
+  const getText = (sel: string): string =>
+    (document.querySelector(sel) as HTMLElement | null)?.innerText?.trim() ?? ''
+
+  const getAll = (sel: string): string =>
+    Array.from(document.querySelectorAll(sel))
+      .map((el) => (el as HTMLElement).innerText?.trim() ?? '')
+      .filter(Boolean)
+      .join('\n')
+
+  const parts: string[] = []
+
+  parts.push('=== PROFILE TITLE ===')
+  parts.push(
+    getText('[data-test="freelancer-title"]') ||
+    getText('.freelancer-title') ||
+    getText('h1') ||
+    getText('[class*="title"]')
+  )
+
+  parts.push('\n=== OVERVIEW ===')
+  parts.push(
+    getText('[data-test="overview-text"]') ||
+    getText('[class*="overview"] p') ||
+    getText('[class*="description"] p')
+  )
+
+  parts.push('\n=== HOURLY RATE ===')
+  parts.push(
+    getText('[data-test="freelancer-rate"]') ||
+    getText('[class*="rate"]') ||
+    getText('[class*="hourly"]')
+  )
+
+  parts.push('\n=== SKILLS ===')
+  const skills = Array.from(new Set([
+    ...Array.from(document.querySelectorAll('[data-test="skill-badge"]')),
+    ...Array.from(document.querySelectorAll('[class*="skill"]')),
+  ].map((el) => (el as HTMLElement).innerText?.trim() ?? '').filter(Boolean)))
+  parts.push(skills.join(', '))
+
+  parts.push('\n=== WORK HISTORY ===')
+  parts.push(getAll('[data-test="portfolio-item-card"]') || getAll('[class*="work-history"] li'))
+
+  parts.push('\n=== EMPLOYMENT ===')
+  parts.push(getAll('[data-test="employment-item"]') || getAll('[class*="employment"] li'))
+
+  parts.push('\n=== EDUCATION ===')
+  parts.push(getAll('[data-test="education-item"]') || getAll('[class*="education"] li'))
+
+  parts.push('\n=== PORTFOLIO ===')
+  parts.push(getAll('[data-test="portfolio-item"]') || getAll('[class*="portfolio"] li'))
+
+  // Last-resort: grab all visible text from main content if structured data is thin
+  const structured = parts.join('\n').replace(/\s+/g, ' ').trim()
+  if (structured.length < 300) {
+    const main = (document.querySelector('main') ?? document.querySelector('[role="main"]') ?? document.body) as HTMLElement
+    parts.push('\n=== PAGE TEXT (fallback) ===')
+    parts.push(main.innerText.slice(0, 8000))
+  }
+
+  return parts.join('\n').slice(0, 15000)
 }

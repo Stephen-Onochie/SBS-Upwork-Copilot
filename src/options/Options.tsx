@@ -50,8 +50,11 @@ export function Options(): React.ReactElement {
             </li>
           ))}
         </ul>
-        <div className="px-5 py-4 text-sbs-cream/30 text-xs border-t border-white/10">
-          sitesbystephen.com
+        <div className="px-5 py-4 border-t border-white/10">
+          <a href="https://sitesbystephen.com" target="_blank" rel="noopener noreferrer"
+            className="text-sbs-cream/30 hover:text-sbs-gold text-xs transition-colors">
+            sitesbystephen.com
+          </a>
         </div>
       </nav>
 

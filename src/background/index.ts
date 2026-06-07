@@ -11,7 +11,8 @@ chrome.runtime.onStartup.addListener(() => {
   initMonitor()
 })
 
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (sender.id !== chrome.runtime.id) return false
   handleMessage(message, sendResponse)
   return true // keep channel open for async response
 })

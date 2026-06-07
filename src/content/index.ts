@@ -5,22 +5,34 @@ import { initMessagesPage } from './pages/messages'
 
 function route(): void {
   const path = window.location.pathname
+  console.log('[SBS Copilot] route() path:', path)
 
-  if (isOwnProfilePage(path)) {
+  if (isProfilePage(path)) {
+    console.log('[SBS Copilot] → profile page')
     initProfilePage()
   } else if (isJobPostPage(path)) {
+    console.log('[SBS Copilot] → job post page')
     initJobPostPage()
   } else if (isApplyPage(path)) {
+    console.log('[SBS Copilot] → apply page')
     initApplyPage()
   } else if (isMessagesPage(path)) {
+    console.log('[SBS Copilot] → messages page')
     initMessagesPage()
   } else if (isSavedSearchesPage(path)) {
+    console.log('[SBS Copilot] → saved searches page')
     initSavedSearchesDiscovery()
+  } else {
+    console.log('[SBS Copilot] → no match for this path')
   }
 }
 
-function isOwnProfilePage(path: string): boolean {
-  return path.startsWith('/freelancers/')
+function isProfilePage(path: string): boolean {
+  // Covers /freelancers/~uid, /freelancers/username, and /profile/uid variants
+  return (
+    path.startsWith('/freelancers/') ||
+    path.startsWith('/profile/')
+  )
 }
 
 function isJobPostPage(path: string): boolean {
@@ -40,7 +52,6 @@ function isSavedSearchesPage(path: string): boolean {
 }
 
 function initSavedSearchesDiscovery(): void {
-  // Read saved searches from the DOM and send to worker for storage
   const observer = new MutationObserver(() => {
     const items = document.querySelectorAll('[data-test="saved-search-item"]')
     if (items.length === 0) return
@@ -65,12 +76,13 @@ function initSavedSearchesDiscovery(): void {
 
   observer.observe(document.body, { childList: true, subtree: true })
 
-  // Also try immediately
   setTimeout(() => {
     const items = document.querySelectorAll('[data-test="saved-search-item"]')
     if (items.length > 0) observer.disconnect()
   }, 3000)
 }
+
+console.log('[SBS Copilot] content script loaded on', window.location.href)
 
 // Run on initial load
 route()
