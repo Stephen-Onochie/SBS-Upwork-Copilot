@@ -2,7 +2,7 @@ import type { ExtensionMessage, MessageResponse } from '@/lib/types'
 import { analyzeProfile } from './profile'
 import { generateProposal, generateQuestionAnswer } from './proposal'
 import { scoreJob } from './scorer'
-import { syncHubSpot } from './hubspot'
+import { syncHubSpot, runHubSpotSmokeTest } from './hubspot'
 import { logProposalSent, signIn } from './supabase'
 import { get, set } from '@/lib/storage'
 
@@ -89,6 +89,20 @@ async function dispatch(message: ExtensionMessage): Promise<unknown> {
       if (!resp.ok) throw new Error(`HubSpot API error: ${resp.status}`)
       return { ok: true }
     }
+
+    case 'TEST_OPENROUTER_KEY': {
+      const resp = await fetch('https://openrouter.ai/api/v1/models', {
+        headers: { Authorization: `Bearer ${message.apiKey}` },
+      })
+      if (!resp.ok) {
+        const body = await resp.text()
+        throw new Error(`OpenRouter API error ${resp.status}: ${body.slice(0, 120)}`)
+      }
+      return { ok: true }
+    }
+
+    case 'TEST_HUBSPOT_SYNC':
+      return runHubSpotSmokeTest()
 
     default:
       throw new Error(`Unknown message type`)

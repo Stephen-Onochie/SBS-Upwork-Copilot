@@ -5,6 +5,7 @@ export function Monitor(): React.ReactElement {
   const [searches, setSearches] = useState<SavedSearch[]>([])
   const [intervalMins, setIntervalMins] = useState(3)
   const [saved, setSaved] = useState(false)
+  const [manualUrl, setManualUrl] = useState('')
 
   useEffect(() => {
     chrome.storage.local.get(['saved_searches', 'monitor_interval_minutes'], (result) => {
@@ -29,6 +30,21 @@ export function Monitor(): React.ReactElement {
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
     })
+  }
+
+  function addManualSearch(): void {
+    const trimmed = manualUrl.trim()
+    if (!trimmed) return
+    const newSearch: SavedSearch = {
+      id: `manual-${Date.now()}`,
+      label: 'Manual Search',
+      url: trimmed,
+      monitorEnabled: true,
+    }
+    const updated = [...searches, newSearch]
+    setSearches(updated)
+    chrome.storage.local.set({ saved_searches: updated })
+    setManualUrl('')
   }
 
   function openSavedSearches(): void {
@@ -66,6 +82,28 @@ export function Monitor(): React.ReactElement {
             className="text-xs text-sbs-gold font-medium hover:underline">
             View on Upwork →
           </button>
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-xs text-sbs-gray">
+            If auto-discovery isn't working, paste a saved-search URL from Upwork below.
+          </p>
+          <div className="flex gap-2">
+            <input
+              type="url"
+              value={manualUrl}
+              onChange={(e) => setManualUrl(e.target.value)}
+              placeholder="https://www.upwork.com/nx/jobs/search/..."
+              className="flex-1 rounded-lg border border-sbs-border px-3 py-2 text-sm text-sbs-navy bg-white focus:outline-none focus:ring-2 focus:ring-sbs-gold/40"
+            />
+            <button
+              onClick={addManualSearch}
+              disabled={!manualUrl.trim()}
+              className="px-3 py-2 text-sm font-semibold bg-sbs-gold text-sbs-navy rounded-lg hover:bg-sbs-gold-light disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              Add
+            </button>
+          </div>
         </div>
 
         {searches.length === 0 && (

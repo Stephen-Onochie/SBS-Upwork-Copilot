@@ -26,13 +26,20 @@ export function ApiKeys(): React.ReactElement {
   const [scoringModel, setScoringModel] = useState('gemini-2.0-flash-lite')
   const [rpmCap, setRpmCap] = useState(10)
 
+  const [openRouterKey, setOpenRouterKey] = useState('')
+  const [openRouterGenModel, setOpenRouterGenModel] = useState('')
+  const [openRouterScoringModel, setOpenRouterScoringModel] = useState('')
+  const [activeProvider, setActiveProvider] = useState<'gemini' | 'openrouter'>('gemini')
+
   const [showGeminiKey, setShowGeminiKey] = useState(false)
+  const [showOpenRouterKey, setShowOpenRouterKey] = useState(false)
   const [showHubspotToken, setShowHubspotToken] = useState(false)
   const [showAnonKey, setShowAnonKey] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
 
   const [geminiStatus, setGeminiStatus] = useState<Status>('idle')
   const [geminiError, setGeminiError] = useState('')
+  const [orTestStatus, setOrTestStatus] = useState<Status>('idle')
   const [hubspotStatus, setHubspotStatus] = useState<Status>('idle')
   const [hubspotError, setHubspotError] = useState('')
   const [supabaseStatus, setSupabaseStatus] = useState<Status>('idle')
@@ -42,7 +49,8 @@ export function ApiKeys(): React.ReactElement {
   useEffect(() => {
     chrome.storage.local.get(
       ['gemini_api_key', 'hubspot_token', 'supabase_url', 'supabase_anon_key', 'supabase_email',
-       'gemini_model_generation', 'gemini_model_scoring', 'gemini_rpm_cap'],
+       'gemini_model_generation', 'gemini_model_scoring', 'gemini_rpm_cap',
+       'openrouter_api_key', 'openrouter_model_generation', 'openrouter_model_scoring', 'active_provider'],
       (result) => {
         if (result.gemini_api_key) setGeminiKey(result.gemini_api_key as string)
         if (result.hubspot_token) setHubspotToken(result.hubspot_token as string)
@@ -52,6 +60,10 @@ export function ApiKeys(): React.ReactElement {
         if (result.gemini_model_generation) setGeminiModel(result.gemini_model_generation as string)
         if (result.gemini_model_scoring) setScoringModel(result.gemini_model_scoring as string)
         if (result.gemini_rpm_cap) setRpmCap(result.gemini_rpm_cap as number)
+        if (result.openrouter_api_key) setOpenRouterKey(result.openrouter_api_key as string)
+        if (result.openrouter_model_generation) setOpenRouterGenModel(result.openrouter_model_generation as string)
+        if (result.openrouter_model_scoring) setOpenRouterScoringModel(result.openrouter_model_scoring as string)
+        if (result.active_provider) setActiveProvider(result.active_provider as 'gemini' | 'openrouter')
       }
     )
   }, [])
@@ -66,6 +78,10 @@ export function ApiKeys(): React.ReactElement {
       gemini_model_generation: geminiModel,
       gemini_model_scoring: scoringModel,
       gemini_rpm_cap: rpmCap,
+      openrouter_api_key: openRouterKey,
+      openrouter_model_generation: openRouterGenModel,
+      openrouter_model_scoring: openRouterScoringModel,
+      active_provider: activeProvider,
     }, () => {
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
@@ -78,6 +94,16 @@ export function ApiKeys(): React.ReactElement {
     const resp = await chrome.runtime.sendMessage({ type: 'TEST_GEMINI_KEY', apiKey: geminiKey })
     setGeminiStatus(resp.ok ? 'ok' : 'error')
     if (!resp.ok) setGeminiError(resp.error ?? 'Unknown error')
+  }
+
+  async function testOpenRouter(): Promise<void> {
+    setOrTestStatus('testing')
+    try {
+      const resp = await chrome.runtime.sendMessage({ type: 'TEST_OPENROUTER_KEY', apiKey: openRouterKey })
+      setOrTestStatus(resp.ok ? 'ok' : 'error')
+    } catch {
+      setOrTestStatus('error')
+    }
   }
 
   async function testHubSpot(): Promise<void> {
@@ -117,6 +143,25 @@ export function ApiKeys(): React.ReactElement {
   return (
     <div className="space-y-8">
       <h2 className="text-xl font-bold text-sbs-navy font-display">API Keys & Configuration</h2>
+
+      {/* Provider */}
+      <section className="space-y-3">
+        <h3 className="font-semibold text-gray-800">Active AI Provider</h3>
+        <div>
+          <label className="block text-sm text-gray-600 mb-1">Active AI Provider</label>
+          <select
+            value={activeProvider}
+            onChange={(e) => setActiveProvider(e.target.value as 'gemini' | 'openrouter')}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+          >
+            <option value="gemini">Google Gemini</option>
+            <option value="openrouter">OpenRouter</option>
+          </select>
+        </div>
+        <p className="text-xs text-gray-400">
+          OpenRouter lets you use any model (GPT-4o, Claude, Llama, etc.) with your own credits. Gemini is the free default.
+        </p>
+      </section>
 
       {/* Gemini */}
       <section className="space-y-3">
@@ -163,6 +208,51 @@ export function ApiKeys(): React.ReactElement {
         </div>
         <p className="text-xs text-gray-400">
           ⚠️ Free tier may use prompts for model training. Keep sensitive data minimal in prompts.
+        </p>
+      </section>
+
+      {/* OpenRouter */}
+      <section className="space-y-3">
+        <h3 className="font-semibold text-gray-800">OpenRouter</h3>
+        <div>
+          <label className="block text-sm text-gray-600 mb-1">API Key</label>
+          <div className="relative">
+            <input
+              type={showOpenRouterKey ? 'text' : 'password'}
+              value={openRouterKey}
+              onChange={(e) => setOpenRouterKey(e.target.value)}
+              placeholder="sk-or-..."
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 text-sm"
+            />
+            <button type="button" onClick={() => setShowOpenRouterKey((v) => !v)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+              <EyeIcon open={showOpenRouterKey} />
+            </button>
+          </div>
+        </div>
+        <div className="flex gap-3 items-center">
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">Generation Model</label>
+            <input value={openRouterGenModel} onChange={(e) => setOpenRouterGenModel(e.target.value)}
+              placeholder="google/gemini-flash-1.5"
+              className="border border-gray-300 rounded px-2 py-1 text-sm w-48" />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">Scoring Model</label>
+            <input value={openRouterScoringModel} onChange={(e) => setOpenRouterScoringModel(e.target.value)}
+              placeholder="google/gemini-flash-1.5"
+              className="border border-gray-300 rounded px-2 py-1 text-sm w-48" />
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <button onClick={() => void testOpenRouter()} disabled={orTestStatus === 'testing'}
+            className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-sm font-medium rounded-lg disabled:opacity-50">
+            Test Connection
+          </button>
+          <StatusBadge status={orTestStatus} />
+        </div>
+        <p className="text-xs text-gray-400">
+          Only the active provider (selected above) is used for AI calls.
         </p>
       </section>
 

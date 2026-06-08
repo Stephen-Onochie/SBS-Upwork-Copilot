@@ -12,6 +12,11 @@ export default defineManifest({
     'https://*.upwork.com/*',
     'https://generativelanguage.googleapis.com/*',
     'https://api.hubapi.com/*',
+    'https://openrouter.ai/*',
+  ],
+
+  web_accessible_resources: [
+    { resources: ['src/offscreen/offscreen.html'], matches: ['<all_urls>'] },
   ],
 
   background: {

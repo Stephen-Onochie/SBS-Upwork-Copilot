@@ -179,7 +179,17 @@ export async function syncHubSpot(message: SyncHubSpotMessage): Promise<{ contac
     message.jobContext ? `Context: ${message.jobContext}` : '',
   ].filter(Boolean).join('\n')
 
-  const stageId = await pickStage(stages, context)
+  let stageId: string
+  try {
+    stageId = await pickStage(stages, context)
+  } catch (err) {
+    console.warn('[HubSpot] pickStage failed, using first available stage:', err)
+    stageId = stages[0]?.id ?? ''
+  }
+  // Double-guard: ensure non-empty when stages are available
+  if (!stageId && stages.length > 0) {
+    stageId = stages[0].id
+  }
 
   const notes = [
     message.jobTitle ? `Job: ${message.jobTitle}` : '',
@@ -206,4 +216,28 @@ export async function syncHubSpot(message: SyncHubSpotMessage): Promise<{ contac
   }).catch(console.warn)
 
   return { contactId, dealId, stage: stageLabel, action: 'created' }
+}
+
+export async function runHubSpotSmokeTest(): Promise<{
+  ok: boolean
+  contactId?: string
+  dealId?: string
+  stage?: string
+  error?: string
+}> {
+  const mockMessage: SyncHubSpotMessage = {
+    type: 'SYNC_HUBSPOT',
+    clientName: 'Test Contact (SBS Smoke Test)',
+    company: 'Test Company Ltd',
+    jobTitle: 'Smoke Test Project',
+    jobContext:
+      'This is a smoke test entry created by the SBS Copilot to verify end-to-end HubSpot sync.',
+    proposalText: 'Smoke test proposal — please delete this contact and deal after testing.',
+  }
+  try {
+    const result = await syncHubSpot(mockMessage)
+    return { ok: true, ...result }
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : String(err) }
+  }
 }

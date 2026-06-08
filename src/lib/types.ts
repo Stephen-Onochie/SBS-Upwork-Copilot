@@ -155,6 +155,10 @@ export interface StorageSchema {
   gemini_model_generation?: string
   gemini_model_scoring?: string
   gemini_rpm_cap?: number
+  openrouter_api_key?: string
+  openrouter_model_generation?: string
+  openrouter_model_scoring?: string
+  active_provider?: 'gemini' | 'openrouter'
   hubspot_token?: string
   supabase_url?: string
   supabase_anon_key?: string
@@ -202,7 +206,9 @@ export type MessageType =
   | 'LOG_PROPOSAL_SENT'
   | 'DISCOVER_SAVED_SEARCHES'
   | 'TEST_GEMINI_KEY'
+  | 'TEST_OPENROUTER_KEY'
   | 'TEST_HUBSPOT_TOKEN'
+  | 'TEST_HUBSPOT_SYNC'
   | 'SUPABASE_LOGIN'
   | 'SCRAPE_AND_ANALYZE_PROFILE'
 
@@ -275,6 +281,15 @@ export interface ScrapeAndAnalyzeProfileMessage extends MessageBase {
   type: 'SCRAPE_AND_ANALYZE_PROFILE'
 }
 
+export interface TestOpenRouterKeyMessage extends MessageBase {
+  type: 'TEST_OPENROUTER_KEY'
+  apiKey: string
+}
+
+export interface TestHubSpotSyncMessage extends MessageBase {
+  type: 'TEST_HUBSPOT_SYNC'
+}
+
 export type ExtensionMessage =
   | AnalyzeProfileMessage
   | GenerateProposalMessage
@@ -287,6 +302,8 @@ export type ExtensionMessage =
   | TestHubSpotTokenMessage
   | SupabaseLoginMessage
   | ScrapeAndAnalyzeProfileMessage
+  | TestOpenRouterKeyMessage
+  | TestHubSpotSyncMessage
 
 export interface MessageResponse<T = unknown> {
   ok: boolean

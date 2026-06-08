@@ -86,6 +86,27 @@ export async function getGeminiModels(): Promise<{ generation: string; scoring: 
   }
 }
 
+export async function getOpenRouterKey(): Promise<string | undefined> {
+  const { openrouter_api_key } = await get(['openrouter_api_key'])
+  return openrouter_api_key
+}
+
+export async function getOpenRouterModels(): Promise<{ generation: string; scoring: string }> {
+  const { openrouter_model_generation, openrouter_model_scoring } = await get([
+    'openrouter_model_generation',
+    'openrouter_model_scoring',
+  ])
+  return {
+    generation: openrouter_model_generation ?? 'google/gemini-flash-1.5',
+    scoring: openrouter_model_scoring ?? 'google/gemini-flash-1.5',
+  }
+}
+
+export async function getActiveProvider(): Promise<'gemini' | 'openrouter'> {
+  const { active_provider } = await get(['active_provider'])
+  return active_provider ?? 'gemini'
+}
+
 export async function getConnectsTarget(): Promise<number> {
   const { connects_target } = await get(['connects_target'])
   return connects_target ?? 20

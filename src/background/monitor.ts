@@ -4,6 +4,17 @@ import { logEvent } from './supabase'
 import { hashJobId, randomJitterMs, isInQuietHours, truncate } from '@/lib/utils'
 import type { JobPost, JobBudget } from '@/lib/types'
 
+async function ensureOffscreenDocument(): Promise<void> {
+  const hasDoc = await chrome.offscreen.hasDocument()
+  if (!hasDoc) {
+    await chrome.offscreen.createDocument({
+      url: 'src/offscreen/offscreen.html',
+      reasons: [chrome.offscreen.Reason.AUDIO_PLAYBACK],
+      justification: 'Play notification sound for high-score job alert',
+    })
+  }
+}
+
 const ALARM_NAME = 'job-monitor'
 const PROFILE_REMINDER_ALARM = 'profile-reminder'
 
@@ -111,6 +122,11 @@ async function handleMonitorAlarm(): Promise<void> {
         title: `${batchedHighScoreJobs.length} new high-score jobs`,
         message: topScores,
       })
+      const notifCfg = await getNotificationConfig()
+      if (notifCfg.sound !== 'none' && notifCfg.volume > 0) {
+        await ensureOffscreenDocument()
+        chrome.runtime.sendMessage({ type: 'PLAY_SOUND', sound: notifCfg.sound, volume: notifCfg.volume }).catch(() => {})
+      }
     }
   }
 
@@ -135,6 +151,11 @@ async function fireJobNotification(job: Partial<JobPost> & { title: string; url:
     message: reason,
     buttons: [{ title: 'View Job' }],
   })
+  const notifCfg = await getNotificationConfig()
+  if (notifCfg.sound !== 'none' && notifCfg.volume > 0) {
+    await ensureOffscreenDocument()
+    chrome.runtime.sendMessage({ type: 'PLAY_SOUND', sound: notifCfg.sound, volume: notifCfg.volume }).catch(() => {})
+  }
 
   chrome.notifications.onButtonClicked.addListener((id, idx) => {
     if (id === notifId && idx === 0) {
@@ -160,6 +181,11 @@ async function fetchJobsFromSearch(searchUrl: string): Promise<JobPost[]> {
       title: 'SBS Copilot — Sign in required',
       message: 'Sign in to Upwork to resume job monitoring.',
     })
+    const notifCfg = await getNotificationConfig()
+    if (notifCfg.sound !== 'none' && notifCfg.volume > 0) {
+      await ensureOffscreenDocument()
+      chrome.runtime.sendMessage({ type: 'PLAY_SOUND', sound: notifCfg.sound, volume: notifCfg.volume }).catch(() => {})
+    }
     return []
   }
 
@@ -261,5 +287,10 @@ async function handleProfileReminderAlarm(): Promise<void> {
       message: "It's the 1st of the month! Consider re-analyzing your Upwork profile.",
       buttons: [{ title: 'Go to Profile' }],
     })
+    const notifCfg = await getNotificationConfig()
+    if (notifCfg.sound !== 'none' && notifCfg.volume > 0) {
+      await ensureOffscreenDocument()
+      chrome.runtime.sendMessage({ type: 'PLAY_SOUND', sound: notifCfg.sound, volume: notifCfg.volume }).catch(() => {})
+    }
   }
 }
