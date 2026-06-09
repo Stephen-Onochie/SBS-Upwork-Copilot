@@ -91,12 +91,14 @@ async function dispatch(message: ExtensionMessage): Promise<unknown> {
     }
 
     case 'TEST_OPENROUTER_KEY': {
-      const resp = await fetch('https://openrouter.ai/api/v1/models', {
+      // /auth/key requires a valid key and returns 401 for invalid ones
+      const resp = await fetch('https://openrouter.ai/api/v1/auth/key', {
         headers: { Authorization: `Bearer ${message.apiKey}` },
       })
       if (!resp.ok) {
+        if (resp.status === 401) throw new Error('Invalid API key — check your OpenRouter key')
         const body = await resp.text()
-        throw new Error(`OpenRouter API error ${resp.status}: ${body.slice(0, 120)}`)
+        throw new Error(`OpenRouter error ${resp.status}: ${body.slice(0, 120)}`)
       }
       return { ok: true }
     }

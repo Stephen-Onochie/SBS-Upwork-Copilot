@@ -40,6 +40,7 @@ export function ApiKeys(): React.ReactElement {
   const [geminiStatus, setGeminiStatus] = useState<Status>('idle')
   const [geminiError, setGeminiError] = useState('')
   const [orTestStatus, setOrTestStatus] = useState<Status>('idle')
+  const [orError, setOrError] = useState('')
   const [hubspotStatus, setHubspotStatus] = useState<Status>('idle')
   const [hubspotError, setHubspotError] = useState('')
   const [supabaseStatus, setSupabaseStatus] = useState<Status>('idle')
@@ -98,11 +99,14 @@ export function ApiKeys(): React.ReactElement {
 
   async function testOpenRouter(): Promise<void> {
     setOrTestStatus('testing')
+    setOrError('')
     try {
       const resp = await chrome.runtime.sendMessage({ type: 'TEST_OPENROUTER_KEY', apiKey: openRouterKey })
       setOrTestStatus(resp.ok ? 'ok' : 'error')
-    } catch {
+      if (!resp.ok) setOrError(resp.error ?? 'Unknown error')
+    } catch (err) {
       setOrTestStatus('error')
+      setOrError(err instanceof Error ? err.message : 'Unknown error')
     }
   }
 
@@ -249,7 +253,7 @@ export function ApiKeys(): React.ReactElement {
             className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-sm font-medium rounded-lg disabled:opacity-50">
             Test Connection
           </button>
-          <StatusBadge status={orTestStatus} />
+          <StatusBadge status={orTestStatus} errorMsg={orError} />
         </div>
         <p className="text-xs text-gray-400">
           Only the active provider (selected above) is used for AI calls.
